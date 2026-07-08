@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="재고관리">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#3d3a8c">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%233d3a8c'/%3E%3Ctext x='90' y='118' font-size='90' text-anchor='middle' fill='white' font-family='sans-serif'%3E%E2%97%88%3C/text%3E%3C/svg%3E">
+<title>토코페롤 재고관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1d24;
+  --ink-soft:#5a6070;
+  --ink-faint:#9197a6;
+  --line:#e7e9f0;
+  --line-soft:#f1f2f7;
+  --bg:#f6f7fb;
+  --panel:#ffffff;
+  --brand:#3d3a8c;
+  --brand-soft:#edecf9;
+  --brand-mid:#a8a4e6;
+  --teal:#0f7a5f;
+  --teal-soft:#e2f5ee;
+  --amber:#9a6410;
+  --amber-soft:#fcf0db;
+  --red:#b23030;
+  --red-soft:#fcebeb;
+  --green:#3b6d11;
+  --green-soft:#ebf5df;
+  --blue:#1d5fa5;
+  --blue-soft:#e7f1fc;
+  --radius:14px;
+  --radius-sm:9px;
+  --shadow:0 1px 2px rgba(26,29,36,.04),0 4px 16px rgba(26,29,36,.05);
+  --shadow-lg:0 8px 40px rgba(26,29,36,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'IBM Plex Sans KR',-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:14px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.layout{display:flex;min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:230px;background:var(--panel);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:20;
+}
+.brand{padding:24px 22px 20px;border-bottom:1px solid var(--line-soft)}
+.brand-mark{display:flex;align-items:center;gap:11px}
+.brand-logo{
+  width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(135deg,var(--brand),#6c68c4);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;
+  box-shadow:0 4px 12px rgba(61,58,140,.3);
+}
+.brand-text h1{font-family:'Space Grotesk';font-size:16px;font-weight:600;letter-spacing:-.3px;line-height:1.1}
+.brand-text p{font-size:11px;color:var(--ink-faint);margin-top:1px}
+.nav{padding:14px 12px;flex:1}
+.nav-label{font-size:10px;font-weight:600;color:var(--ink-faint);letter-spacing:.5px;padding:8px 12px 6px;text-transform:uppercase}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--radius-sm);
+  font-size:13.5px;color:var(--ink-soft);cursor:pointer;font-weight:500;
+  transition:all .15s;margin-bottom:2px;
+}
+.nav-item:hover{background:var(--line-soft);color:var(--ink)}
+.nav-item.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.nav-item .ico{font-size:18px;width:20px;text-align:center}
+.sidebar-foot{padding:14px 18px;border-top:1px solid var(--line-soft);font-size:11px;color:var(--ink-faint)}
+.save-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:6px;vertical-align:middle}
+
+/* ── Main ── */
+.main{flex:1;margin-left:230px;display:flex;flex-direction:column;min-width:0}
+.topbar{
+  background:rgba(246,247,251,.85);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:18px 32px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;
+}
+.topbar h2{font-family:'Space Grotesk';font-size:21px;font-weight:600;letter-spacing:-.4px}
+.topbar .sub{font-size:12.5px;color:var(--ink-faint);margin-top:1px}
+.content{padding:28px 32px 60px;max-width:1080px;width:100%}
+
+/* ── Buttons ── */
+.btn{
+  font-family:inherit;font-size:13px;font-weight:500;padding:9px 16px;border-radius:var(--radius-sm);
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;transition:all .15s;
+}
+.btn:hover{border-color:var(--ink-faint);transform:translateY(-1px)}
+.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn-primary:hover{background:#322f78;box-shadow:0 4px 14px rgba(61,58,140,.3)}
+.btn .ico{font-size:16px}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* ── Cards / KPIs ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.kpi::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--brand)}
+.kpi.k-teal::after{background:var(--teal)}
+.kpi.k-amber::after{background:var(--amber)}
+.kpi.k-blue::after{background:var(--blue)}
+.kpi-label{font-size:11.5px;color:var(--ink-faint);font-weight:500;display:flex;align-items:center;gap:5px}
+.kpi-val{font-family:'Space Grotesk';font-size:28px;font-weight:600;letter-spacing:-1px;margin-top:8px;line-height:1}
+.kpi-val small{font-size:14px;font-weight:500;color:var(--ink-soft);margin-left:2px}
+.kpi-sub{font-size:11.5px;color:var(--ink-faint);margin-top:6px}
+
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden;
+}
+.card-head{padding:18px 22px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:15px;font-weight:600;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.card-body{padding:6px 22px 14px}
+.card-body.flush{padding:0}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse}
+th{
+  font-size:11px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;
+  text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+th.r,td.r{text-align:right}
+th.c,td.c{text-align:center}
+td{padding:13px 14px;border-bottom:1px solid var(--line-soft);font-size:13.5px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--line-soft)}
+.subtotal-row td{background:var(--brand-soft);font-weight:600;color:var(--brand)}
+.subtotal-row.t-teal td{background:var(--teal-soft);color:var(--teal)}
+.subtotal-row.t-blue td{background:var(--blue-soft);color:var(--blue)}
+.subtotal-row tr:hover td{background:var(--brand-soft)}
+.mono{font-family:'Space Grotesk';font-variant-numeric:tabular-nums}
+.prod-name{font-weight:600}
+.muted{color:var(--ink-faint)}
+
+/* ── Badges ── */
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;display:inline-block;white-space:nowrap}
+.b-ok{background:var(--green-soft);color:var(--green)}
+.b-warn{background:var(--amber-soft);color:var(--amber)}
+.b-danger{background:var(--red-soft);color:var(--red)}
+.b-info{background:var(--brand-soft);color:var(--brand)}
+.b-blue{background:var(--blue-soft);color:var(--blue)}
+.b-teal{background:var(--teal-soft);color:var(--teal)}
+.b-gray{background:var(--line-soft);color:var(--ink-soft)}
+.b-next{background:var(--red-soft);color:var(--red)}
+.b-wait{background:var(--line-soft);color:var(--ink-faint)}
+
+.fifo-tag{font-size:10px;font-weight:600;background:var(--brand-soft);color:var(--brand);padding:2px 8px;border-radius:99px}
+
+/* ── Alert banner ── */
+.alert{
+  background:var(--amber-soft);border:1px solid #f0dcb0;border-radius:var(--radius);
+  padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;
+}
+.alert .ico{font-size:20px;color:var(--amber);flex-shrink:0;margin-top:1px}
+.alert-title{font-weight:600;color:var(--amber);font-size:13.5px}
+.alert-body{font-size:12.5px;color:#7a5410;margin-top:2px}
+.alert.danger{background:var(--red-soft);border-color:#f0b8b8}
+.alert.danger .ico,.alert.danger .alert-title{color:var(--red)}
+.alert.danger .alert-body{color:#8a2525}
+
+/* ── Forms / Modal ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(26,29,36,.45);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--panel);border-radius:18px;box-shadow:var(--shadow-lg);
+  width:100%;max-width:460px;max-height:90vh;overflow-y:auto;animation:pop .2s ease;
+}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.modal-close{background:none;border:none;font-size:22px;color:var(--ink-faint);cursor:pointer;line-height:1}
+.modal-body{padding:20px 24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--line-soft);display:flex;gap:10px;justify-content:flex-end}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.field input,.field select{
+  width:100%;font-family:inherit;font-size:13.5px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel);color:var(--ink);
+  transition:border .15s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--brand-mid);box-shadow:0 0 0 3px var(--brand-soft)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fifo-preview{background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px;margin-top:6px;border:1px dashed var(--line)}
+.fifo-preview .ph{font-size:11px;font-weight:600;color:var(--ink-faint);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
+.fifo-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12.5px}
+.fifo-line .exp{color:var(--ink-soft);font-family:'Space Grotesk'}
+.fifo-line .ded{color:var(--red);font-weight:600;font-family:'Space Grotesk'}
+.fifo-short{color:var(--red);font-weight:600;font-size:12px;padding-top:6px;border-top:1px solid var(--line);margin-top:4px}
+
+/* ── Activity list ── */
+.act-item{display:flex;gap:13px;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+.act-item:last-child{border-bottom:none}
+.act-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.act-out{background:var(--red-soft);color:var(--red)}
+.act-in{background:var(--green-soft);color:var(--green)}
+.act-main{flex:1;min-width:0}
+.act-title{font-size:13.5px;font-weight:500}
+.act-meta{font-size:11.5px;color:var(--ink-faint);margin-top:1px}
+.act-amt{font-size:13px;font-weight:600;font-family:'Space Grotesk';color:var(--ink-soft);white-space:nowrap}
+.btn-del{
+  background:none;border:1px solid transparent;color:var(--ink-faint);
+  width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:14px;line-height:1;
+  flex-shrink:0;transition:all .15s;margin-left:4px;
+}
+.btn-del:hover{background:var(--red-soft);color:var(--red);border-color:#f0b8b8}
+td .btn-del{width:26px;height:26px;font-size:13px}
+
+/* ── Stock bar ── */
+.sbar{height:6px;background:var(--line-soft);border-radius:99px;overflow:hidden;width:90px;display:inline-block;vertical-align:middle}
+.sbar i{display:block;height:100%;border-radius:99px}
+
+/* ── Month report bars ── */
+.mrow{display:flex;align-items:center;gap:12px;padding:9px 0}
+.mrow .ml{width:64px;font-size:12px;color:var(--ink-soft);font-family:'Space Grotesk';flex-shrink:0}
+.mrow .mbar-wrap{flex:1;height:24px;background:var(--line-soft);border-radius:6px;overflow:hidden;display:flex}
+.mbar{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;font-size:10px;color:#fff;font-weight:600;min-width:2px}
+.mbar.b70{background:var(--brand)}
+.mbar.b95{background:var(--teal)}
+.mbar.balp{background:#c2632a}
+.mrow .mv{width:78px;text-align:right;font-size:12.5px;font-weight:600;font-family:'Space Grotesk';flex-shrink:0}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--ink-soft);margin-bottom:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+.empty{padding:34px;text-align:center;color:var(--ink-faint);font-size:13px}
+.section-gap{height:8px}
+
+@media(max-width:880px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .content{padding:20px 16px 50px}
+  .topbar{padding:14px 16px}
+  .menu-toggle{display:flex!important}
+}
+.menu-toggle{display:none;background:none;border:1px solid var(--line);border-radius:8px;width:38px;height:38px;align-items:center;justify-content:center;font-size:20px;cursor:pointer}
+</style>
+<script type="module">
+  // ▼▼▼ 여기에 Firebase 콘솔에서 복사한 설정값을 붙여넣으세요 ▼▼▼
+  const firebaseConfig = {
+    apiKey: "AIzaSyCg1mUJZY6Lf53bG4_Z4q9Uok2eec5_0Fc",
+    authDomain: "tocotheol-stock.firebaseapp.com",
+    projectId: "tocotheol-stock",
+    storageBucket: "tocotheol-stock.firebasestorage.app",
+    messagingSenderId: "844139654750",
+    appId: "1:844139654750:web:b97b84fa8399c063cfcecf"
+  };
+  // ▲▲▲ 여기까지 ▲▲▲
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // 설정이 비어있으면 로컬 모드로 동작
+  const configured = firebaseConfig.projectId && !firebaseConfig.projectId.includes("여기에");
+
+  if (configured) {
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const ref = doc(db, "stockflow", "shared");
+
+    // 전역으로 노출 → 일반 스크립트에서 사용
+    window.__cloud = {
+      enabled: true,
+      async loadOnce() {
+        const snap = await getDoc(ref);
+        return snap.exists() ? snap.data().payload : null;
+      },
+      async push(state) {
+        await setDoc(ref, { payload: state, updatedAt: Date.now() });
+      },
+      subscribe(cb) {
+        onSnapshot(ref, (snap) => {
+          if (snap.exists() && snap.data().payload) cb(snap.data().payload);
+        });
+      }
+    };
+  } else {
+    window.__cloud = { enabled: false };
+  }
+
+  // 클라우드 준비 완료 알림
+  window.dispatchEvent(new Event("cloud-ready"));
+</script>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <div class="brand-logo">◈</div>
+        <div class="brand-text">
+          <h1>StockFlow</h1>
+          <p>토코페롤 재고관리</p>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">메뉴</div>
+      <div class="nav-item active" data-page="dash"><span class="ico">▦</span> 대시보드</div>
+      <div class="nav-item" data-page="stock"><span class="ico">▤</span> 재고 현황</div>
+      <div class="nav-item" data-page="out"><span class="ico">↑</span> 출고 등록</div>
+      <div class="nav-item" data-page="in"><span class="ico">↓</span> 입고 등록</div>
+      <div class="nav-item" data-page="order"><span class="ico">⛴</span> 발주 현황</div>
+      <div class="nav-item" data-page="report"><span class="ico">◔</span> 월별 리포트</div>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="save-dot"></span><span id="saveTxt">로컬 저장</span>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div>
+          <h2 id="pageTitle">대시보드</h2>
+          <div class="sub" id="pageSub">전체 재고 현황 한눈에 보기</div>
+        </div>
+      </div>
+      <div id="topActions"></div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<!-- Out modal -->
+<div class="modal-overlay" id="outModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>↑ 출고 등록</h3>
+      <button class="modal-close" onclick="closeModal('outModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>제품</label>
+        <select id="o-prod" onchange="updFifo()"></select>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>출고일자</label><input type="date" id="o-date"></div>
+        <div class="field"><label>출고량 (kg)</label><input type="number" id="o-qty" min="1" placeholder="0" oninput="updFifo()"></div>
+      </div>
+      <div class="field"><label>출고처</label><input type="text" id="o-dest" placeholder="예: 두레/오뚜기 안양공장"></div>
+      <div class="fifo-preview" id="o-fifo" style="display:none">
+        <div class="ph">선입선출 차감 미리보기</div>
+        <div id="o-fifo-lines"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('outModal')">취소</button>
+      <button class="btn btn-primary" onclick="doOut()">출고 확정</button>
+    </div>
+  </div>
+</div>
+
+<!-- In modal -->
+<div class="modal-overlay" id="inModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>↓ 입고 등록</h3>
+      <button class="modal-close" onclick="closeModal('inModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>제품</label>
+        <select id="i-prod"></select>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>유통기한 (YYMMDD)</label><input type="text" id="i-exp" placeholder="예: 291201" maxlength="6"></div>
+        <div class="field"><label>입고량 (kg)</label><input type="number" id="i-qty" min="1" placeholder="0"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>입고일자</label><input type="date" id="i-date"></div>
+        <div class="field"><label>원가 (원/kg)</label><input type="number" id="i-cost" min="0" placeholder="0"></div>
+      </div>
+      <div class="field"><label>공급업체 / 비고</label><input type="text" id="i-note" placeholder="예: 미국 / FOB"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('inModal')">취소</button>
+      <button class="btn btn-primary" onclick="doIn()">입고 확정</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>⛴ 발주 등록</h3>
+      <button class="modal-close" onclick="closeModal('orderModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>제품</label>
+        <select id="ord-prod"></select>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>발주일자</label><input type="date" id="ord-date"></div>
+        <div class="field"><label>발주수량 (kg)</label><input type="number" id="ord-qty" min="1" placeholder="0"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>ETD (출항예정)</label><input type="text" id="ord-etd" placeholder="예: 2026-07 또는 2026-07-15"></div>
+        <div class="field"><label>ETA (입고예정)</label><input type="text" id="ord-eta" placeholder="예: 2026-08"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>거래조건</label><select id="ord-cond"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option></select></div>
+        <div class="field"><label>단가 (USD/kg)</label><input type="number" id="ord-usd" min="0" step="0.01" placeholder="0"></div>
+      </div>
+      <div class="field"><label>비고</label><input type="text" id="ord-note" placeholder="공급업체 등"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('orderModal')">취소</button>
+      <button class="btn btn-primary" onclick="doOrder()">발주 등록</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════ DATA ═══════════════ */
+const LS_KEY='toc-stockflow-v1';
+
+const SEED={
+  products:[
+    {name:'토코페롤 70', sku:'TOC-070', warehouse:'원스탑', safeStock:900,  sellPrice:68000,  group:'70'},
+    {name:'토코페롤 95', sku:'TOC-095', warehouse:'비엠엘', safeStock:1500, sellPrice:95000,  group:'95'},
+    {name:'알파토코페롤',sku:'TOC-ALP', warehouse:'비엠엘', safeStock:0,    sellPrice:100000, group:'alp'},
+  ],
+  lots:[
+    {id:'l1', product:'토코페롤 70', exp:'280828', stock:190,  costKRW:55752, costUSD:37, cond:'CIF'},
+    {id:'l2', product:'토코페롤 70', exp:'290104', stock:1480, costKRW:53500, costUSD:34, cond:'FOB'},
+    {id:'l3', product:'토코페롤 70', exp:'290113', stock:520,  costKRW:53500, costUSD:34, cond:'FOB'},
+    {id:'l4', product:'토코페롤 95', exp:'281221', stock:1600, costKRW:82780, costUSD:55, cond:'FOB'},
+    {id:'l5', product:'알파토코페롤',exp:'280510', stock:300,  costKRW:78700, costUSD:51, cond:'FOB'},
+    {id:'l6', product:'알파토코페롤',exp:'280830', stock:690,  costKRW:78700, costUSD:51, cond:'FOB'},
+  ],
+  outHistory:[
+    {id:'o1',date:'2026-05-04',product:'토코페롤 95',qty:200,dest:'두레/오뚜기 안양공장',fifo:[{exp:'281221',qty:200}],amount:19000000},
+    {id:'o2',date:'2026-05-04',product:'토코페롤 70',qty:200,dest:'두레/오뚜기 안양공장',fifo:[{exp:'280828',qty:190},{exp:'290104',qty:10}],amount:13600000},
+    {id:'o3',date:'2026-05-07',product:'토코페롤 95',qty:200,dest:'두레/오뚜기 안양공장',fifo:[{exp:'281221',qty:200}],amount:19000000},
+    {id:'o4',date:'2026-05-18',product:'토코페롤 70',qty:200,dest:'두레/오뚜기',fifo:[{exp:'290104',qty:200}],amount:13600000},
+    {id:'o5',date:'2026-05-19',product:'토코페롤 95',qty:200,dest:'두레/오뚜기 안양공장',fifo:[{exp:'281221',qty:200}],amount:19000000},
+  ],
+  inHistory:[
+    {id:'i1',date:'2025-03-19',product:'토코페롤 70',exp:'271030',qty:2000,note:'미국 CIF'},
+    {id:'i2',date:'2025-09-29',product:'토코페롤 70',exp:'280620',qty:470, note:'미국 CIF'},
+    {id:'i3',date:'2025-09-29',product:'토코페롤 70',exp:'280828',qty:1535,note:'미국 CIF'},
+    {id:'i4',date:'2026-03-26',product:'토코페롤 70',exp:'290104',qty:1480,note:'미국 CIF'},
+    {id:'i5',date:'2026-03-26',product:'토코페롤 70',exp:'290113',qty:530, note:'미국 CIF'},
+    {id:'i6',date:'2025-12-02',product:'토코페롤 95',exp:'280910',qty:2000,note:'미국 CIF'},
+    {id:'i7',date:'2026-02-23',product:'토코페롤 95',exp:'281221',qty:2000,note:'미국 CIF'},
+    {id:'i8',date:'2026-03-25',product:'알파토코페롤',exp:'281101',qty:1000,note:'미국 CIF'},
+  ],
+  /* 판매내역 기반 월별 출고 (kg) */
+  salesHistory:[
+    {month:'2025-11', '70':0,   '95':0,   'alp':4, supply:2120000},
+    {month:'2025-12', '70':400, '95':200, 'alp':4, supply:48320000},
+    {month:'2026-01', '70':210, '95':600, 'alp':0, supply:71300000},
+    {month:'2026-02', '70':200, '95':200, 'alp':0, supply:32600000},
+    {month:'2026-03', '70':200, '95':600, 'alp':0, supply:70600000},
+    {month:'2026-04', '70':200, '95':200, 'alp':0, supply:32600000},
+    {month:'2026-05', '70':400, '95':600, 'alp':0, supply:84200000},
+  ],
+  orders:[
+    {id:'ord1', product:'토코페롤 95', qty:1800, orderDate:'2026-05-06', etd:'2026-06-22', eta:'2026-07-10', cond:'FOB', costUSD:55, status:'운송중', note:''},
+  ],
+};
+
+let S=null;
+
+let cloudOn=false;       // 클라우드 연결 여부
+let applyingRemote=false; // 원격 갱신 적용 중 (저장 루프 방지)
+
+function loadLocal(){
+  try{ const r=localStorage.getItem(LS_KEY); S=r?JSON.parse(r):JSON.parse(JSON.stringify(SEED)); }
+  catch(e){ S=JSON.parse(JSON.stringify(SEED)); }
+}
+function save(){
+  // 항상 로컬에도 백업
+  try{ localStorage.setItem(LS_KEY,JSON.stringify(S)); }catch(e){}
+  if(cloudOn && !applyingRemote){
+    setSaveStatus('동기화 중...');
+    window.__cloud.push(S).then(()=>setSaveStatus('동기화됨')).catch(()=>setSaveStatus('동기화 실패'));
+  } else {
+    flashSave();
+  }
+}
+function setSaveStatus(txt){ const t=document.getElementById('saveTxt'); if(t) t.textContent=txt; }
+function flashSave(){
+  setSaveStatus('저장 완료');
+  setTimeout(()=>setSaveStatus(cloudOn?'실시간 공유 중':'자동 저장됨'),1500);
+}
+function resetData(){
+  if(confirm('모든 데이터를 초기 상태로 되돌릴까요? (공유 중인 모든 사용자에게 반영됩니다)')){
+    S=JSON.parse(JSON.stringify(SEED)); save(); render();
+  }
+}
+/* 기존 클라우드 데이터에 SEED의 입고 내역을 병합 (현재고는 건드리지 않음) */
+function syncInHistory(){
+  const existIds=new Set((S.inHistory||[]).map(h=>h.id));
+  const toAdd=SEED.inHistory.filter(h=>!existIds.has(h.id));
+  if(!toAdd.length){ alert('이미 입고 내역이 모두 반영되어 있습니다.'); return; }
+  if(confirm(`입고 내역 ${toAdd.length}건을 추가할까요? (현재고는 변경되지 않습니다)`)){
+    S.inHistory=[...(S.inHistory||[]),...toAdd].sort((a,b)=>a.date.localeCompare(b.date));
+    save(); nav('in');
+  }
+}
+
+/* ═══════════════ HELPERS ═══════════════ */
+const fmt=n=>Math.round(n).toLocaleString('ko-KR');
+const won=n=>fmt(n)+'원';
+const man=n=>fmt(Math.round(n/10000))+'만원';
+const prodList=()=>S.products.map(p=>p.name);
+const prodInfo=n=>S.products.find(p=>p.name===n);
+const lotsOf=n=>S.lots.filter(l=>l.product===n).sort((a,b)=>a.exp.localeCompare(b.exp));
+const totalOf=n=>lotsOf(n).reduce((s,l)=>s+l.stock,0);
+const safeOf=n=>prodInfo(n)?.safeStock||0;
+const stockValueOf=n=>lotsOf(n).reduce((s,l)=>s+l.stock*l.costKRW,0);
+
+function statusOf(n){
+  const t=totalOf(n),sf=safeOf(n);
+  if(!sf) return {label:'-',cls:'b-gray'};
+  if(t===0) return {label:'품절',cls:'b-danger'};
+  if(t<sf*0.2) return {label:'긴급',cls:'b-danger'};
+  if(t<sf) return {label:'부족',cls:'b-warn'};
+  return {label:'정상',cls:'b-ok'};
+}
+
+/* 유통기한 임박 판정: YYMMDD → 오늘과 비교, 6개월 이내 경고 */
+function expDaysLeft(exp){
+  const yy=2000+parseInt(exp.slice(0,2)), mm=parseInt(exp.slice(2,4))-1, dd=parseInt(exp.slice(4,6));
+  const target=new Date(yy,mm,dd);
+  const now=new Date();
+  return Math.round((target-now)/(1000*60*60*24));
+}
+function expBadge(exp){
+  const d=expDaysLeft(exp);
+  if(d<0) return '<span class="badge b-danger">만료</span>';
+  if(d<90) return '<span class="badge b-danger">'+d+'일</span>';
+  if(d<180) return '<span class="badge b-warn">임박</span>';
+  return '<span class="badge b-ok">여유</span>';
+}
+
+function fifoCalc(product,qty){
+  const lots=lotsOf(product).filter(l=>l.stock>0);
+  let rem=qty,lines=[];
+  for(const l of lots){ if(rem<=0)break; const d=Math.min(l.stock,rem); lines.push({exp:l.exp,deduct:d,after:l.stock-d}); rem-=d; }
+  return {lines,shortage:rem};
+}
+
+/* ═══════════════ NAV ═══════════════ */
+const PAGES={
+  dash:{title:'대시보드',sub:'전체 재고 현황 한눈에 보기'},
+  stock:{title:'재고 현황',sub:'제품·유통기한별 상세 재고'},
+  out:{title:'출고 등록',sub:'선입선출 자동 차감'},
+  in:{title:'입고 등록',sub:'신규 로트 추가 및 재고 반영'},
+  order:{title:'발주 현황',sub:'발주 후 입고 진행 중인 제품'},
+  report:{title:'월별 리포트',sub:'판매 추이 및 소진 예측'},
+};
+let curPage='dash';
+
+function nav(page){
+  curPage=page;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  document.getElementById('pageTitle').textContent=PAGES[page].title;
+  document.getElementById('pageSub').textContent=PAGES[page].sub;
+  document.getElementById('sidebar').classList.remove('open');
+  render();
+}
+
+function render(){
+  const c=document.getElementById('content');
+  const ta=document.getElementById('topActions');
+  if(curPage==='dash'){ c.innerHTML=viewDash(); ta.innerHTML='<button class="btn btn-primary" onclick="openOut()"><span class="ico">↑</span> 출고 등록</button>'; }
+  else if(curPage==='stock'){ c.innerHTML=viewStock(); ta.innerHTML='<button class="btn" onclick="openIn()"><span class="ico">↓</span> 입고</button> <button class="btn btn-primary" onclick="openOut()"><span class="ico">↑</span> 출고</button>'; }
+  else if(curPage==='out'){ c.innerHTML=viewHistory('out'); ta.innerHTML='<button class="btn btn-primary" onclick="openOut()"><span class="ico">+</span> 출고 등록</button>'; }
+  else if(curPage==='in'){ c.innerHTML=viewHistory('in'); ta.innerHTML='<button class="btn btn-sm" onclick="syncInHistory()">과거 입고내역 불러오기</button> <button class="btn btn-primary" onclick="openIn()"><span class="ico">+</span> 입고 등록</button>'; }
+  else if(curPage==='order'){ c.innerHTML=viewOrders(); ta.innerHTML='<button class="btn btn-primary" onclick="openOrder()"><span class="ico">+</span> 발주 등록</button>'; }
+  else if(curPage==='report'){ c.innerHTML=viewReport(); ta.innerHTML='<button class="btn btn-sm" onclick="resetData()">데이터 초기화</button>'; }
+}
+
+/* ═══════════════ DASHBOARD ═══════════════ */
+function viewDash(){
+  const totalAll=S.lots.reduce((s,l)=>s+l.stock,0);
+  const totalValue=S.lots.reduce((s,l)=>s+l.stock*l.costKRW,0);
+  const now=new Date(), ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const moOut=S.outHistory.filter(h=>h.date.startsWith(ym)).reduce((s,h)=>s+h.qty,0);
+  const moAmt=S.outHistory.filter(h=>h.date.startsWith(ym)).reduce((s,h)=>s+h.amount,0);
+  const alerts=prodList().filter(p=>['부족','긴급','품절'].includes(statusOf(p).label));
+  const expSoon=S.lots.filter(l=>l.stock>0 && expDaysLeft(l.exp)<180);
+
+  let alertHtml='';
+  if(alerts.length){
+    alertHtml+=`<div class="alert"><span class="ico">⚠</span><div><div class="alert-title">안전재고 미달</div><div class="alert-body">${alerts.join(', ')} — 발주 검토가 필요합니다.</div></div></div>`;
+  }
+  if(expSoon.length){
+    const list=expSoon.map(l=>`${l.product}(${l.exp})`).join(', ');
+    alertHtml+=`<div class="alert danger"><span class="ico">⏰</span><div><div class="alert-title">유통기한 임박</div><div class="alert-body">${list} — 우선 출고를 권장합니다.</div></div></div>`;
+  }
+
+  return `
+  ${alertHtml}
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">▤ 총 재고</div><div class="kpi-val">${fmt(totalAll)}<small>kg</small></div><div class="kpi-sub">${S.lots.length}개 로트</div></div>
+    <div class="kpi k-teal"><div class="kpi-label">◈ 재고 평가액</div><div class="kpi-val">${man(totalValue)}</div><div class="kpi-sub">원가 기준</div></div>
+    <div class="kpi k-amber"><div class="kpi-label">↑ 이번달 출고</div><div class="kpi-val">${fmt(moOut)}<small>kg</small></div><div class="kpi-sub">${moAmt?man(moAmt):'-'}</div></div>
+    <div class="kpi k-blue"><div class="kpi-label">▦ 제품 종류</div><div class="kpi-val">${S.products.length}<small>종</small></div><div class="kpi-sub">${alerts.length?alerts.length+'종 주의':'전체 정상'}</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">제품별 재고 현황</div></div>
+    <div class="card-body flush">
+      <table>
+        <thead><tr><th>제품</th><th>창고</th><th class="r">현재고</th><th class="r">안전재고</th><th style="width:110px">잔여율</th><th class="c">상태</th></tr></thead>
+        <tbody>
+        ${prodList().map(p=>{
+          const t=totalOf(p),sf=safeOf(p),st=statusOf(p);
+          const pct=sf?Math.min(100,Math.round(t/sf*100)):100;
+          const col=st.label==='정상'?'var(--green)':st.label==='부족'?'var(--amber)':st.label==='-'?'var(--brand-mid)':'var(--red)';
+          return `<tr>
+            <td class="prod-name">${p}</td>
+            <td class="muted">${prodInfo(p).warehouse}</td>
+            <td class="r mono"><strong>${fmt(t)}</strong> kg</td>
+            <td class="r mono muted">${sf?fmt(sf)+' kg':'-'}</td>
+            <td><span class="sbar"><i style="width:${pct}%;background:${col}"></i></span></td>
+            <td class="c"><span class="badge ${st.cls}">${st.label}</span></td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">최근 출고 내역</div><button class="btn btn-sm" onclick="nav('out')">전체 보기</button></div>
+    <div class="card-body">
+      ${S.outHistory.slice().reverse().slice(0,5).map(h=>`
+        <div class="act-item">
+          <div class="act-ico act-out">↑</div>
+          <div class="act-main">
+            <div class="act-title">${h.product} <strong>${fmt(h.qty)}kg</strong> → ${h.dest}</div>
+            <div class="act-meta">${h.date} · 선입선출 (${h.fifo.map(f=>f.exp).join(', ')})</div>
+          </div>
+          <div class="act-amt">${man(h.amount)}</div>
+        </div>`).join('')||'<div class="empty">출고 내역이 없습니다.</div>'}
+    </div>
+  </div>`;
+}
+
+/* ═══════════════ STOCK ═══════════════ */
+function viewStock(){
+  return prodList().map(p=>{
+    const lots=lotsOf(p),total=totalOf(p),sf=safeOf(p),st=statusOf(p),val=stockValueOf(p);
+    const tcls=prodInfo(p).group==='95'?'t-blue':prodInfo(p).group==='alp'?'t-teal':'';
+    return `
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">${p} <span class="muted" style="font-weight:400;font-size:13px">· ${prodInfo(p).warehouse} · ${prodInfo(p).sku}</span></div>
+        <span class="badge ${st.cls}">${st.label}</span>
+      </div>
+      <div class="card-body flush">
+        <table>
+          <thead><tr>
+            <th>유통기한</th><th class="r">현재고</th><th class="r">원가</th><th class="c">USD</th><th class="c">조건</th><th class="c">기한</th><th class="c">선입선출</th><th class="c"></th>
+          </tr></thead>
+          <tbody>
+          ${lots.map((l,i)=>`<tr>
+            <td class="mono">${l.exp}</td>
+            <td class="r mono"><strong>${fmt(l.stock)}</strong> kg <button class="btn-del" title="재고 수정" onclick="editLot('${l.id}')" style="color:var(--blue)">✎</button></td>
+            <td class="r mono muted">${fmt(l.costKRW)}</td>
+            <td class="c muted">$${l.costUSD}</td>
+            <td class="c"><span class="badge ${l.cond==='CIF'?'b-blue':'b-teal'}">${l.cond}</span></td>
+            <td class="c">${expBadge(l.exp)}</td>
+            <td class="c"><span class="badge ${i===0&&l.stock>0?'b-next':'b-wait'}">${i===0&&l.stock>0?'다음 출고':'대기'}</span></td>
+            <td class="c"><button class="btn-del" title="이 로트 삭제" onclick="delLot('${l.id}')">✕</button></td>
+          </tr>`).join('')}
+          <tr class="subtotal-row ${tcls}">
+            <td>합계</td>
+            <td class="r mono">${fmt(total)} kg</td>
+            <td class="r" colspan="2">평가액 ${man(val)}</td>
+            <td class="c" colspan="4">안전재고 ${sf?fmt(sf)+'kg / 차이 '+(total-sf>=0?'+':'')+fmt(total-sf)+'kg':'-'}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════ HISTORY ═══════════════ */
+function viewHistory(type){
+  const data=type==='out'?S.outHistory:S.inHistory;
+  const sorted=data.slice().reverse();
+  const icoClass=type==='out'?'act-out':'act-in';
+  const ico=type==='out'?'↑':'↓';
+  if(!sorted.length) return `<div class="card"><div class="empty">${type==='out'?'출고':'입고'} 내역이 없습니다.<br><br><button class="btn btn-primary" onclick="${type==='out'?'openOut':'openIn'}()">+ ${type==='out'?'출고':'입고'} 등록</button></div></div>`;
+  return `<div class="card">
+    <div class="card-head"><div class="card-title">전체 ${type==='out'?'출고':'입고'} 내역</div><span class="badge b-gray">${sorted.length}건</span></div>
+    <div class="card-body">
+    ${sorted.map(h=>`
+      <div class="act-item">
+        <div class="act-ico ${icoClass}">${ico}</div>
+        <div class="act-main">
+          <div class="act-title">${h.product} <strong>${fmt(h.qty)}kg</strong> ${type==='out'?'→ '+h.dest:'· 유통기한 '+h.exp}</div>
+          <div class="act-meta">${h.date}${type==='out'?' · '+h.fifo.map(f=>f.exp+': '+fmt(f.qty)+'kg').join(', '):(h.note?' · '+h.note:'')}</div>
+        </div>
+        ${type==='out'?`<div class="act-amt">${man(h.amount)}</div>`:''}
+        <button class="btn-del" title="삭제" onclick="delHistory('${type}','${h.id}')">✕</button>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* 내역 삭제 — 재고 원복 옵션 포함 */
+function delHistory(type,id){
+  const arr=type==='out'?S.outHistory:S.inHistory;
+  const idx=arr.findIndex(h=>h.id===id);
+  if(idx<0) return;
+  const h=arr[idx];
+  const label=type==='out'?'출고':'입고';
+  const restore=confirm(`이 ${label} 내역을 삭제할까요?\n\n${h.product} ${fmt(h.qty)}kg (${h.date})\n\n확인: 재고를 되돌리고 삭제\n취소: 삭제 안 함`);
+  if(!restore) return;
+
+  if(type==='out'){
+    // 출고 취소 → 차감했던 로트에 수량 복원
+    h.fifo.forEach(f=>{
+      const lot=S.lots.find(l=>l.product===h.product&&l.exp===f.exp);
+      if(lot) lot.stock+=f.qty;
+      else S.lots.push({id:'l'+Date.now()+Math.random().toString(36).slice(2,5),product:h.product,exp:f.exp,stock:f.qty,costKRW:0,costUSD:0,cond:'FOB'});
+    });
+  } else {
+    // 입고 취소 → 추가했던 수량 차감 (재고 부족 시 0까지만)
+    const lot=S.lots.find(l=>l.product===h.product&&l.exp===h.exp);
+    if(lot){ lot.stock=Math.max(0,lot.stock-h.qty); }
+  }
+  arr.splice(idx,1);
+  save();
+  nav(type);
+}
+
+/* 재고 로트 수량 직접 수정 (실사 재고 반영용) */
+function editLot(id){
+  const lot=S.lots.find(l=>l.id===id);
+  if(!lot) return;
+  const v=prompt(`${lot.product} · 유통기한 ${lot.exp}\n현재 재고: ${fmt(lot.stock)}kg\n\n실제 재고 수량(kg)을 입력하세요:`, lot.stock);
+  if(v===null) return;
+  const n=parseFloat(v);
+  if(isNaN(n)||n<0){ alert('0 이상의 숫자를 입력해주세요.'); return; }
+  lot.stock=n;
+  save();
+  render();
+}
+
+/* 재고 로트 삭제 */
+function delLot(id){
+  const lot=S.lots.find(l=>l.id===id);
+  if(!lot) return;
+  if(confirm(`이 로트를 삭제할까요?\n\n${lot.product} · 유통기한 ${lot.exp} · ${fmt(lot.stock)}kg\n\n삭제하면 되돌릴 수 없습니다.`)){
+    S.lots=S.lots.filter(l=>l.id!==id);
+    save();
+    render();
+  }
+}
+
+/* ═══════════════ ORDERS (발주현황) ═══════════════ */
+function orderStatusBadge(s){
+  const map={'발주완료':'b-info','운송중':'b-blue','입고완료':'b-ok','지연':'b-warn','취소':'b-gray'};
+  return `<span class="badge ${map[s]||'b-gray'}">${s}</span>`;
+}
+function viewOrders(){
+  const orders=(S.orders||[]).filter(o=>o.status!=='취소');
+  const active=orders.filter(o=>o.status!=='입고완료');
+  const totalInbound=active.reduce((s,o)=>s+o.qty,0);
+  let html=`
+  <div class="kpi-grid">
+    <div class="kpi k-blue"><div class="kpi-label">⛴ 운송중 발주</div><div class="kpi-val">${active.length}<small>건</small></div><div class="kpi-sub">입고 대기</div></div>
+    <div class="kpi"><div class="kpi-label">▤ 입고 예정량</div><div class="kpi-val">${fmt(totalInbound)}<small>kg</small></div><div class="kpi-sub">발주 합계</div></div>
+  </div>`;
+
+  if(!orders.length){
+    html+=`<div class="card"><div class="empty">발주 내역이 없습니다.<br><br><button class="btn btn-primary" onclick="openOrder()">+ 발주 등록</button></div></div>`;
+    return html;
+  }
+
+  html+=`<div class="card">
+    <div class="card-head"><div class="card-title">발주 진행 현황</div><span class="badge b-gray">${orders.length}건</span></div>
+    <div class="card-body flush">
+      <table>
+        <thead><tr>
+          <th>제품</th><th class="r">발주수량</th><th class="c">발주일</th><th class="c">ETD</th><th class="c">ETA</th><th class="c">상태</th><th class="c"></th>
+        </tr></thead>
+        <tbody>
+        ${orders.map(o=>`<tr>
+          <td class="prod-name">${o.product}${o.costUSD?` <span class="muted" style="font-weight:400;font-size:11px">· $${o.costUSD} ${o.cond||''}</span>`:''}</td>
+          <td class="r mono"><strong>${fmt(o.qty)}</strong> kg</td>
+          <td class="c mono muted">${o.orderDate||'-'}</td>
+          <td class="c mono muted">${o.etd||'-'}</td>
+          <td class="c mono">${o.eta||'-'}</td>
+          <td class="c">${orderStatusBadge(o.status)}</td>
+          <td class="c" style="white-space:nowrap">
+            ${o.status!=='입고완료'?`<button class="btn btn-sm" style="padding:4px 9px" onclick="markArrived('${o.id}')">입고완료</button>`:''}
+            <button class="btn-del" title="수정" onclick="openOrder('${o.id}')" style="color:var(--blue)">✎</button>
+            <button class="btn-del" title="삭제" onclick="delOrder('${o.id}')">✕</button>
+          </td>
+        </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--ink-faint);padding:4px 6px">※ ETD = 출항예정일, ETA = 도착(입고)예정일. "입고완료"를 누르면 입고 내역으로 이동합니다.</div>`;
+  return html;
+}
+
+let editingOrderId=null;
+function openOrder(id){
+  editingOrderId=id||null;
+  const o=id?(S.orders||[]).find(x=>x.id===id):null;
+  const sel=document.getElementById('ord-prod');
+  sel.innerHTML=prodList().map(p=>`<option ${o&&o.product===p?'selected':''}>${p}</option>`).join('');
+  document.getElementById('ord-date').value=o?o.orderDate:new Date().toISOString().slice(0,10);
+  document.getElementById('ord-qty').value=o?o.qty:'';
+  document.getElementById('ord-etd').value=o?o.etd:'';
+  document.getElementById('ord-eta').value=o?o.eta:'';
+  document.getElementById('ord-usd').value=o?o.costUSD:'';
+  document.getElementById('ord-note').value=o?o.note:'';
+  document.getElementById('ord-cond').value=o?o.cond:'FOB';
+  document.querySelector('#orderModal .modal-head h3').textContent=o?'⛴ 발주 수정':'⛴ 발주 등록';
+  openModal('orderModal');
+}
+function doOrder(){
+  const product=document.getElementById('ord-prod').value;
+  const qty=parseFloat(document.getElementById('ord-qty').value)||0;
+  const orderDate=document.getElementById('ord-date').value;
+  const etd=document.getElementById('ord-etd').value;
+  const eta=document.getElementById('ord-eta').value;
+  const cond=document.getElementById('ord-cond').value;
+  const costUSD=parseFloat(document.getElementById('ord-usd').value)||0;
+  const note=document.getElementById('ord-note').value;
+  if(!qty||qty<=0){alert('발주수량을 입력해주세요.');return;}
+  if(!S.orders) S.orders=[];
+  if(editingOrderId){
+    const o=S.orders.find(x=>x.id===editingOrderId);
+    if(o){ Object.assign(o,{product,qty,orderDate,etd,eta,cond,costUSD,note}); }
+    editingOrderId=null;
+  } else {
+    S.orders.push({id:'ord'+Date.now(),product,qty,orderDate,etd,eta,cond,costUSD,status:'운송중',note});
+  }
+  save();closeModal('orderModal');nav('order');
+}
+function delOrder(id){
+  const o=(S.orders||[]).find(x=>x.id===id);
+  if(!o) return;
+  if(confirm(`이 발주 건을 삭제할까요?\n\n${o.product} ${fmt(o.qty)}kg (발주일 ${o.orderDate})`)){
+    S.orders=S.orders.filter(x=>x.id!==id);
+    save();nav('order');
+  }
+}
+/* 입고완료 처리 → 재고 로트 추가 + 입고내역 기록 + 발주상태 변경 */
+function markArrived(id){
+  const o=(S.orders||[]).find(x=>x.id===id);
+  if(!o) return;
+  const exp=prompt(`입고 처리합니다.\n\n${o.product} ${fmt(o.qty)}kg\n\n유통기한을 YYMMDD 6자리로 입력하세요:`,'');
+  if(exp===null) return;
+  if(!/^\d{6}$/.test(exp)){alert('유통기한을 YYMMDD 6자리로 입력해주세요.');return;}
+  const today=new Date().toISOString().slice(0,10);
+  // 재고 로트 추가/합산
+  const lot=S.lots.find(l=>l.product===o.product&&l.exp===exp);
+  if(lot){ lot.stock+=o.qty; }
+  else{
+    const usd=o.costUSD||0;
+    S.lots.push({id:'l'+Date.now(),product:o.product,exp,stock:o.qty,costKRW:0,costUSD:usd,cond:o.cond||'FOB'});
+  }
+  // 입고 내역 기록
+  if(!S.inHistory) S.inHistory=[];
+  S.inHistory.push({id:'i'+Date.now(),date:today,product:o.product,exp,qty:o.qty,note:'발주 입고'+(o.cond?' ('+o.cond+')':'')});
+  // 발주 상태 변경
+  o.status='입고완료';
+  save();
+  alert('입고 완료 처리되었습니다. 재고와 입고내역에 반영됐어요.');
+  nav('order');
+}
+
+/* ═══════════════ REPORT ═══════════════ */
+/* 입고 내역을 월별·제품별로 집계해 막대그래프 카드 생성 */
+function inboundChartCard(){
+  const inH=S.inHistory||[];
+  if(!inH.length){
+    return `<div class="card"><div class="card-head"><div class="card-title">월별 입고량 추이</div></div><div class="empty">입고 내역이 없습니다.</div></div>`;
+  }
+  const groupOf=p=>{const pi=prodInfo(p);return pi?pi.group:'etc';};
+  // {month: {70,95,alp}}
+  const byMonth={};
+  inH.forEach(h=>{
+    const m=h.date.slice(0,7);
+    if(!byMonth[m]) byMonth[m]={'70':0,'95':0,'alp':0};
+    const g=groupOf(h.product);
+    byMonth[m][g]=(byMonth[m][g]||0)+h.qty;
+  });
+  const months=Object.keys(byMonth).sort();
+  const rows=months.map(m=>({month:m,...byMonth[m]}));
+  const maxQty=Math.max(...rows.map(r=>r['70']+r['95']+r['alp']),1);
+  const totalIn=inH.reduce((s,h)=>s+h.qty,0);
+
+  return `
+  <div class="card">
+    <div class="card-head"><div class="card-title">월별 입고량 추이</div><span class="badge b-gray">총 ${fmt(totalIn)}kg</span></div>
+    <div class="card-body">
+      <div class="legend">
+        <span><i style="background:var(--brand)"></i> 토코페롤 70</span>
+        <span><i style="background:var(--teal)"></i> 토코페롤 95</span>
+        <span><i style="background:#c2632a"></i> 알파토코페롤</span>
+      </div>
+      ${rows.map(r=>{
+        const tot=r['70']+r['95']+r['alp'];
+        const w=x=>x/maxQty*100;
+        const lbl=r.month.slice(2).replace('-','.');
+        return `<div class="mrow">
+          <div class="ml">${lbl}</div>
+          <div class="mbar-wrap">
+            ${r['70']?`<div class="mbar b70" style="width:${w(r['70'])}%">${r['70']>=300?fmt(r['70']):''}</div>`:''}
+            ${r['95']?`<div class="mbar b95" style="width:${w(r['95'])}%">${r['95']>=300?fmt(r['95']):''}</div>`:''}
+            ${r['alp']?`<div class="mbar balp" style="width:${w(r['alp'])}%">${r['alp']>=300?fmt(r['alp']):''}</div>`:''}
+          </div>
+          <div class="mv">${fmt(tot)} kg</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function viewReport(){
+  const sh=S.salesHistory;
+  const maxQty=Math.max(...sh.map(m=>m['70']+m['95']+m['alp']));
+  const totalQty=sh.reduce((s,m)=>s+m['70']+m['95']+m['alp'],0);
+  const totalSupply=sh.reduce((s,m)=>s+m.supply,0);
+  // 월평균 (판매 있었던 달만)
+  const avg=g=>{const ms=sh.filter(m=>m[g]>0);return ms.length?Math.round(ms.reduce((s,m)=>s+m[g],0)/ms.length):0;};
+  const avg70=avg('70'),avg95=avg('95'),avgAlp=avg('alp');
+  // 소진 예측
+  const fc=(p,a)=>{const t=totalOf(p);return a>0?(t/a).toFixed(1):'∞';};
+
+  return `
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">분석 기간</div><div class="kpi-val" style="font-size:20px">7개월</div><div class="kpi-sub">2025.11~2026.05</div></div>
+    <div class="kpi k-teal"><div class="kpi-label">총 판매량</div><div class="kpi-val">${fmt(totalQty)}<small>kg</small></div><div class="kpi-sub">월평균 ${fmt(Math.round(totalQty/7))}kg</div></div>
+    <div class="kpi k-amber"><div class="kpi-label">총 공급가</div><div class="kpi-val">${man(totalSupply)}</div><div class="kpi-sub">부가세 별도</div></div>
+    <div class="kpi k-blue"><div class="kpi-label">주력 제품</div><div class="kpi-val" style="font-size:18px">토코페롤 95</div><div class="kpi-sub">매출 72%</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">월별 출고량 추이</div></div>
+    <div class="card-body">
+      <div class="legend">
+        <span><i style="background:var(--brand)"></i> 토코페롤 70</span>
+        <span><i style="background:var(--teal)"></i> 토코페롤 95</span>
+        <span><i style="background:#c2632a"></i> 알파토코페롤</span>
+      </div>
+      ${sh.map(m=>{
+        const tot=m['70']+m['95']+m['alp'];
+        const w=x=>maxQty?(x/maxQty*100):0;
+        const lbl=m.month.slice(2).replace('-','.');
+        return `<div class="mrow">
+          <div class="ml">${lbl}</div>
+          <div class="mbar-wrap">
+            ${m['70']?`<div class="mbar b70" style="width:${w(m['70'])}%">${m['70']>=120?fmt(m['70']):''}</div>`:''}
+            ${m['95']?`<div class="mbar b95" style="width:${w(m['95'])}%">${m['95']>=120?fmt(m['95']):''}</div>`:''}
+            ${m['alp']?`<div class="mbar balp" style="width:${w(m['alp'])}%"></div>`:''}
+          </div>
+          <div class="mv">${fmt(tot)} kg</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  ${inboundChartCard()}
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">월평균 출고 & 소진 예측</div></div>
+    <div class="card-body flush">
+      <table>
+        <thead><tr><th>제품</th><th class="r">월평균 출고</th><th class="r">현재고</th><th class="r">안전재고</th><th class="c">소진 예상</th></tr></thead>
+        <tbody>
+          <tr><td class="prod-name">토코페롤 70</td><td class="r mono">${fmt(avg70)} kg</td><td class="r mono">${fmt(totalOf('토코페롤 70'))} kg</td><td class="r mono muted">${fmt(safeOf('토코페롤 70'))} kg</td><td class="c"><span class="badge b-ok">약 ${fc('토코페롤 70',avg70)}개월</span></td></tr>
+          <tr><td class="prod-name">토코페롤 95</td><td class="r mono">${fmt(avg95)} kg</td><td class="r mono">${fmt(totalOf('토코페롤 95'))} kg</td><td class="r mono muted">${fmt(safeOf('토코페롤 95'))} kg</td><td class="c"><span class="badge b-warn">약 ${fc('토코페롤 95',avg95)}개월</span></td></tr>
+          <tr><td class="prod-name">알파토코페롤</td><td class="r mono">${fmt(avgAlp)} kg</td><td class="r mono">${fmt(totalOf('알파토코페롤'))} kg</td><td class="r mono muted">-</td><td class="c"><span class="badge b-ok">여유</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════ MODALS ═══════════════ */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function openOut(){
+  const sel=document.getElementById('o-prod');
+  sel.innerHTML=prodList().map(p=>`<option>${p}</option>`).join('');
+  document.getElementById('o-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('o-qty').value='';
+  document.getElementById('o-dest').value='';
+  document.getElementById('o-fifo').style.display='none';
+  openModal('outModal');
+}
+function updFifo(){
+  const p=document.getElementById('o-prod').value;
+  const q=parseFloat(document.getElementById('o-qty').value)||0;
+  const box=document.getElementById('o-fifo'),lines=document.getElementById('o-fifo-lines');
+  if(!q){box.style.display='none';return;}
+  box.style.display='block';
+  const r=fifoCalc(p,q);
+  lines.innerHTML=r.lines.map(l=>`<div class="fifo-line"><span class="exp">유통기한 ${l.exp}</span><span class="ded">-${fmt(l.deduct)}kg → 잔여 ${fmt(l.after)}kg</span></div>`).join('')
+    +(r.shortage>0?`<div class="fifo-short">⚠ 재고 부족: ${fmt(r.shortage)}kg</div>`:'');
+}
+function doOut(){
+  const p=document.getElementById('o-prod').value;
+  const q=parseFloat(document.getElementById('o-qty').value)||0;
+  const date=document.getElementById('o-date').value;
+  const dest=document.getElementById('o-dest').value||'미입력';
+  if(!q||q<=0){alert('출고량을 입력해주세요.');return;}
+  const r=fifoCalc(p,q);
+  if(r.shortage>0){alert('재고가 '+fmt(r.shortage)+'kg 부족합니다.');return;}
+  const sellPrice=prodInfo(p).sellPrice;
+  const fifoLog=[];let rem=q;
+  for(const l of lotsOf(p).filter(l=>l.stock>0)){ if(rem<=0)break; const d=Math.min(l.stock,rem); l.stock-=d; fifoLog.push({exp:l.exp,qty:d}); rem-=d; }
+  S.outHistory.push({id:'o'+Date.now(),date,product:p,qty:q,dest,fifo:fifoLog,amount:q*sellPrice});
+  save();closeModal('outModal');nav('out');
+}
+
+function openIn(){
+  const sel=document.getElementById('i-prod');
+  sel.innerHTML=prodList().map(p=>`<option>${p}</option>`).join('');
+  document.getElementById('i-date').value=new Date().toISOString().slice(0,10);
+  ['i-exp','i-qty','i-cost','i-note'].forEach(id=>document.getElementById(id).value='');
+  openModal('inModal');
+}
+function doIn(){
+  const p=document.getElementById('i-prod').value;
+  const exp=document.getElementById('i-exp').value.trim();
+  const q=parseFloat(document.getElementById('i-qty').value)||0;
+  const date=document.getElementById('i-date').value;
+  const cost=parseFloat(document.getElementById('i-cost').value)||0;
+  const note=document.getElementById('i-note').value;
+  if(!/^\d{6}$/.test(exp)){alert('유통기한을 YYMMDD 6자리로 입력해주세요.');return;}
+  if(!q||q<=0){alert('입고량을 입력해주세요.');return;}
+  const ex=S.lots.find(l=>l.product===p&&l.exp===exp);
+  if(ex){ ex.stock+=q; if(cost)ex.costKRW=cost; }
+  else{ S.lots.push({id:'l'+Date.now(),product:p,exp,stock:q,costKRW:cost,costUSD:0,cond:'FOB'}); }
+  S.inHistory.push({id:'i'+Date.now(),date,product:p,exp,qty:q,note});
+  save();closeModal('inModal');nav('in');
+}
+
+/* ═══════════════ INIT ═══════════════ */
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>nav(n.dataset.page)));
+
+async function startup(){
+  loadLocal();      // 먼저 로컬 데이터로 즉시 화면 표시
+  render();
+
+  // 클라우드 준비 대기
+  if(window.__cloud && window.__cloud.enabled){
+    cloudOn=true;
+    setSaveStatus('연결 중...');
+    try{
+      const remote=await window.__cloud.loadOnce();
+      if(remote){ S=remote; }       // 클라우드에 데이터가 있으면 사용
+      else { await window.__cloud.push(S); } // 없으면 현재 로컬 데이터로 초기화
+      render();
+      setSaveStatus('실시간 공유 중');
+      // 실시간 구독: 다른 사람이 바꾸면 자동 반영
+      window.__cloud.subscribe((remoteState)=>{
+        applyingRemote=true;
+        S=remoteState;
+        try{ localStorage.setItem(LS_KEY,JSON.stringify(S)); }catch(e){}
+        render();
+        setSaveStatus('실시간 공유 중');
+        applyingRemote=false;
+      });
+    }catch(e){
+      cloudOn=false;
+      setSaveStatus('오프라인 (로컬 저장)');
+    }
+  }
+}
+
+if(window.__cloud){ startup(); }
+else { window.addEventListener('cloud-ready', startup, {once:true}); }
+</script>
+</body>
+</html>
