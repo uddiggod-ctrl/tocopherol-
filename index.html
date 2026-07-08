@@ -686,7 +686,7 @@ function viewStock(){
           <tbody>
           ${lots.map((l,i)=>`<tr>
             <td class="mono">${l.exp}</td>
-            <td class="r mono"><strong>${fmt(l.stock)}</strong> kg</td>
+            <td class="r mono"><strong>${fmt(l.stock)}</strong> kg <button class="btn-del" title="재고 수정" onclick="editLot('${l.id}')" style="color:var(--blue)">✎</button></td>
             <td class="r mono muted">${fmt(l.costKRW)}</td>
             <td class="c muted">$${l.costUSD}</td>
             <td class="c"><span class="badge ${l.cond==='CIF'?'b-blue':'b-teal'}">${l.cond}</span></td>
@@ -756,6 +756,19 @@ function delHistory(type,id){
   arr.splice(idx,1);
   save();
   nav(type);
+}
+
+/* 재고 로트 수량 직접 수정 (실사 재고 반영용) */
+function editLot(id){
+  const lot=S.lots.find(l=>l.id===id);
+  if(!lot) return;
+  const v=prompt(`${lot.product} · 유통기한 ${lot.exp}\n현재 재고: ${fmt(lot.stock)}kg\n\n실제 재고 수량(kg)을 입력하세요:`, lot.stock);
+  if(v===null) return;
+  const n=parseFloat(v);
+  if(isNaN(n)||n<0){ alert('0 이상의 숫자를 입력해주세요.'); return; }
+  lot.stock=n;
+  save();
+  render();
 }
 
 /* 재고 로트 삭제 */
